@@ -1,0 +1,31 @@
+name: mini_ecommerce_app
+version: 1.0.0+1
+
+environment:
+  sdk: ^3.12.2
+
+dependencies:
+  flutter:
+    sdk: flutter
+
+  flutter_riverpod:
+
+  dio:
+
+  go_router:
+
+  shared_preferences: 
+
+  cached_network_image: 
+
+dev_dependencies:
+  flutter_test:
+    sdk: flutter
+
+  flutter_lints: ^6.0.0
+
+
+
+flutter:
+
+  uses-material-design: true
