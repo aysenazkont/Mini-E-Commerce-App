@@ -12,3 +12,8 @@ final productsFutureProvider = FutureProvider<List<ProductModel>>((ref) async {
   final repository = ref.watch(productRepositoryProvider);
   return repository.fetchProducts();
 });
+
+final productDetailProvider = FutureProvider.family<ProductModel, int>((ref, id) async {
+  final repository = ref.watch(productRepositoryProvider);
+  return repository.fetchProductDetail(id);
+});
