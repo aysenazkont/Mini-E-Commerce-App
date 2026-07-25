@@ -14,4 +14,9 @@ class ProductRepository {
 
   return productsResponse.products;
  }
+
+ Future<ProductModel> fetchProductDetail(int id) async {
+    final response = await _apiClient.getRequest('/products/$id');
+    return ProductModel.fromJson(response.data as Map<String, dynamic>);
+ }
 }
