@@ -20,7 +20,7 @@ class MyApp extends StatelessWidget {
       title: 'Mini E-Commerce',
       debugShowCheckedModeBanner: false,
       theme: AppTheme.lightTheme, 
-      routerConfig: AppRouter.router, 
+      routerConfig: goRouter, 
     );
   }
 }
