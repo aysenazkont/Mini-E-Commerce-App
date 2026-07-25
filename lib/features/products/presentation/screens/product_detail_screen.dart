@@ -173,6 +173,8 @@ class _ProductDetailContent extends StatelessWidget {
                 icon: const Icon(Icons.shopping_cart),
                 label: const Text('Add to Cart'),
                 style: ElevatedButton.styleFrom(
+                  backgroundColor: const Color.fromARGB(255, 249, 157, 254),
+                  foregroundColor: Colors.white,
                   padding: const EdgeInsets.symmetric(vertical: 16),
                   textStyle: const TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
                 ),
