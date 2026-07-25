@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:cached_network_image/cached_network_image.dart'; // Yeni paket eklendi
 import '../../data/models/product_model.dart';
+import 'package:go_router/go_router.dart';
 
 class ProductCard extends StatelessWidget {
   final ProductModel product;
@@ -16,6 +17,11 @@ class ProductCard extends StatelessWidget {
       shape: RoundedRectangleBorder(
         borderRadius: BorderRadius.circular(12),
       ),
+      child: InkWell(
+        onTap: () {
+          // İlgili ürünün ID'si ile detay rotasına yönlendiriyoruz
+          context.push('/product/${product.id}');
+        },
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
@@ -69,6 +75,7 @@ class ProductCard extends StatelessWidget {
             ),
           ),
         ],
+      ),
       ),
     );
   }
