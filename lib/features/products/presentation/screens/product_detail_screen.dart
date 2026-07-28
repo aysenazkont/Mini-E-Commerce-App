@@ -3,7 +3,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import '../providers/product_provider.dart';
 import '../../data/models/product_model.dart';
-import 'product_list_screen.dart'; 
+import '../widgets/app_states.dart';
 
 class ProductDetailScreen extends ConsumerWidget {
   final int id;
@@ -22,7 +22,7 @@ class ProductDetailScreen extends ConsumerWidget {
         data: (product) => _ProductDetailContent(product: product),
         loading: () => const LoadingState(),
         error: (err, stack) => ErrorState(
-          errorMessage: err.toString(),
+          error: err,
           onRetry: () => ref.invalidate(productDetailProvider(id)),
         ),
       ),
@@ -53,7 +53,11 @@ class _ProductDetailContent extends StatelessWidget {
           ),
           errorWidget: (context, url, error) => Container(
             color: theme.colorScheme.surfaceContainerHighest,
-            child: const Icon(Icons.broken_image, size: 64, color: Colors.grey),
+            child: Icon(
+              Icons.broken_image, 
+              size: 64, 
+              color: theme.colorScheme.outline,
+            ),
           ),
         ),
       ),
@@ -71,7 +75,7 @@ class _ProductDetailContent extends StatelessWidget {
             ),
             Row(
               children: [
-                const Icon(Icons.star, color: Colors.amber, size: 20),
+                Icon(Icons.star_rounded, color: theme.colorScheme.tertiary, size: 20),
                 const SizedBox(width: 4),
                 Text(
                   '${product.rating}',
@@ -95,7 +99,7 @@ class _ProductDetailContent extends StatelessWidget {
               '\$${product.price.toStringAsFixed(2)}',
               style: theme.textTheme.headlineMedium?.copyWith(
                 fontWeight: FontWeight.bold,
-                color: Colors.green[700],
+                color: theme.colorScheme.primary,
               ),
             ),
             const SizedBox(width: 12),
@@ -103,13 +107,13 @@ class _ProductDetailContent extends StatelessWidget {
               Container(
                 padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
                 decoration: BoxDecoration(
-                  color: Colors.red[100],
+                  color: theme.colorScheme.errorContainer,
                   borderRadius: BorderRadius.circular(8),
                 ),
                 child: Text(
                   '%${product.discountPercentage.toStringAsFixed(0)} Sale',
                   style: theme.textTheme.labelMedium?.copyWith(
-                    color: Colors.red[900],
+                    color: theme.colorScheme.onErrorContainer, 
                     fontWeight: FontWeight.bold,
                   ),
                 ),
@@ -122,14 +126,14 @@ class _ProductDetailContent extends StatelessWidget {
           children: [
             Icon(
               product.stock > 0 ? Icons.check_circle_outline : Icons.highlight_off,
-              color: product.stock > 0 ? Colors.green : Colors.red,
+              color: product.stock > 0 ? theme.colorScheme.primary : theme.colorScheme.error,
               size: 20,
             ),
             const SizedBox(width: 6),
             Text(
               product.stock > 0 ? '(${product.stock} in stock)' : 'Out of Stock',
               style: theme.textTheme.bodyMedium?.copyWith(
-                color: product.stock > 0 ? Colors.green[800] : Colors.red[800],
+                color: product.stock > 0 ? theme.colorScheme.primary : theme.colorScheme.error,
                 fontWeight: FontWeight.w600,
               ),
             ),
@@ -139,9 +143,8 @@ class _ProductDetailContent extends StatelessWidget {
         const Divider(),
         const SizedBox(height: 16),
 
-        // Açıklama
         Text(
-          'Açıklama',
+          'Description',
           style: theme.textTheme.titleMedium?.copyWith(fontWeight: FontWeight.bold),
         ),
         const SizedBox(height: 8),
@@ -154,8 +157,7 @@ class _ProductDetailContent extends StatelessWidget {
         Row(
           children: [
             IconButton.outlined(
-              onPressed: () {
-              },
+              onPressed: () {},
               icon: const Icon(Icons.favorite_border),
               iconSize: 28,
               style: IconButton.styleFrom(
@@ -165,16 +167,12 @@ class _ProductDetailContent extends StatelessWidget {
             const SizedBox(width: 12),
             Expanded(
               child: ElevatedButton.icon(
-                onPressed: product.stock > 0
-                    ? () {
-                
-                      }
-                    : null,
+                onPressed: product.stock > 0 ? () {} : null,
                 icon: const Icon(Icons.shopping_cart),
                 label: const Text('Add to Cart'),
                 style: ElevatedButton.styleFrom(
-                  backgroundColor: const Color.fromARGB(255, 249, 157, 254),
-                  foregroundColor: Colors.white,
+                  backgroundColor: theme.colorScheme.primary,
+                  foregroundColor: theme.colorScheme.onPrimary,
                   padding: const EdgeInsets.symmetric(vertical: 16),
                   textStyle: const TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
                 ),
