@@ -1,42 +1,55 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import '../../data/models/product_model.dart';
 import '../widgets/app_states.dart'; 
+import '../../data/models/product_model.dart';
 import '../providers/product_provider.dart';
 import '../widgets/product_card.dart';
+import '../widgets/category_chips_widget.dart';
+import '../widgets/product_search_bar.dart';
 
 class ProductListScreen extends ConsumerWidget {
   const ProductListScreen({super.key});
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final productsAsync = ref.watch(productsFutureProvider);
+    final filteredProductsAsync = ref.watch(filteredProductsProvider);
 
     return Scaffold(
       appBar: AppBar(
         title: const Text('Product List'),
         centerTitle: true,
       ),
-body: productsAsync.when(
-  data: (products) {
-    if (products.isEmpty) {
-      return const EmptyState(
-        message: 'No products were found.',
-        icon: Icons.search_off_rounded,
-      );
-    }
-    return ProductGrid(products: products);
-  },
-  loading: () => const LoadingState(),
-  error: (err, stack) => ErrorState(
-    error: err,
-    onRetry: () => ref.invalidate(productsFutureProvider),
-  ),
-),
+      body: Column(
+        children: [
+          const ProductSearchBar(),
+          const CategoryChipsWidget(),
+          const SizedBox(height: 8),
+
+          Expanded(
+            child: filteredProductsAsync.when(
+              data: (products) {
+                if (products.isEmpty) {
+                  return const EmptyState(
+                    message: 'No products were found.',
+                    icon: Icons.search_off_rounded,
+                  );
+                }
+                return ProductGrid(products: products);
+              },
+              loading: () => const LoadingState(),
+              error: (err, stack) => ErrorState(
+                error: err,
+                onRetry: () => ref.invalidate(filteredProductsProvider),
+              ),
+            ),
+          ),
+        ],
+      ),
     );
   }
 }
-  class ProductGrid extends StatelessWidget {
+
+class ProductGrid extends StatelessWidget {
   final List<ProductModel> products; 
 
   const ProductGrid({super.key, required this.products});
