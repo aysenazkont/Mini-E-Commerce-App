@@ -11,10 +11,9 @@ class ApiClient {
     ),
   );
 
-  Future<Response> getRequest(String path) async {
-
-    return await _dio.get(path);
-   
-  }
-}
-
+Future<Response> getRequest(
+  String path, {
+  Map<String, dynamic>? queryParameters,
+}) async {
+  return await _dio.get(path, queryParameters: queryParameters);
+}}

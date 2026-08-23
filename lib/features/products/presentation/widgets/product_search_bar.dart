@@ -1,3 +1,4 @@
+import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../providers/product_provider.dart';
@@ -11,6 +12,7 @@ class ProductSearchBar extends ConsumerStatefulWidget {
 
 class _ProductSearchBarState extends ConsumerState<ProductSearchBar> {
   late final TextEditingController _controller;
+  Timer? _debounceTimer; 
 
   @override
   void initState() {
@@ -22,8 +24,32 @@ class _ProductSearchBarState extends ConsumerState<ProductSearchBar> {
 
   @override
   void dispose() {
+    _debounceTimer?.cancel();
     _controller.dispose();
     super.dispose();
+  }
+
+  void _onSearchChanged(String value) {
+    if (value.trim().isNotEmpty && ref.read(selectedCategoryProvider) != null) {
+      ref.read(selectedCategoryProvider.notifier).state = null;
+    }
+
+    _debounceTimer?.cancel();
+
+    if (value.isEmpty) {
+      ref.read(searchQueryProvider.notifier).state = '';
+      return;
+    }
+
+    _debounceTimer = Timer(const Duration(milliseconds: 400), () {
+      ref.read(searchQueryProvider.notifier).state = value;
+    });
+  }
+
+  void _clearSearch() {
+    _debounceTimer?.cancel();
+    _controller.clear();
+    ref.read(searchQueryProvider.notifier).state = '';
   }
 
   @override
@@ -39,19 +65,14 @@ class _ProductSearchBarState extends ConsumerState<ProductSearchBar> {
       padding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 8.0),
       child: TextField(
         controller: _controller,
-        onChanged: (value) {
-          ref.read(searchQueryProvider.notifier).state = value;
-        },
+        onChanged: _onSearchChanged,
         decoration: InputDecoration(
-          hintText: 'Search a product or brand...',
+          hintText: 'Search for a product or brand...',
           prefixIcon: Icon(Icons.search, color: theme.colorScheme.outline),
-          suffixIcon: searchQuery.isNotEmpty
+          suffixIcon: _controller.text.isNotEmpty || searchQuery.isNotEmpty
               ? IconButton(
                   icon: const Icon(Icons.clear),
-                  onPressed: () {
-                    _controller.clear();
-                    ref.read(searchQueryProvider.notifier).state = '';
-                  },
+                  onPressed: _clearSearch,
                 )
               : null,
           filled: true,

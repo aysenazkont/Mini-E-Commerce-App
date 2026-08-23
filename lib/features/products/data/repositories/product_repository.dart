@@ -22,10 +22,13 @@ class ProductRepository {
  }
 
  Future<List<ProductModel>> searchProducts(String query) async {
-    final response = await _apiClient.getRequest('/products/search?q=$query');
+    final response = await _apiClient.getRequest(
+    '/products/search',
+    queryParameters: {'q': query},
+  );
     final productsResponse = ProductsResponse.fromJson(response.data as Map<String, dynamic>);
     return productsResponse.products;
-  }
+}
 
   Future<List<CategoryModel>> fetchCategories() async {
     final response = await _apiClient.getRequest('/products/categories');

@@ -14,9 +14,10 @@ class CategoryChipsWidget extends ConsumerWidget {
 
     return categoriesAsync.when(
       data: (categories) {
+        final validCategories = categories.where((c) => c.name.trim().isNotEmpty).toList();
         final allCategories = [
           CategoryModel(slug: '', name: 'All'),
-          ...categories,
+          ...validCategories,
         ];
 
         return SizedBox(
@@ -30,6 +31,10 @@ class CategoryChipsWidget extends ConsumerWidget {
               final category = allCategories[index];
               final isSelected = (selectedCategory == null && category.slug.isEmpty) ||
                   (selectedCategory == category.slug);
+
+              final displayName = category.name.isNotEmpty
+              ? '${category.name[0].toUpperCase()}${category.name.substring(1)}'
+              : '';
 
               return ChoiceChip(
                 label: Text(
@@ -59,7 +64,27 @@ class CategoryChipsWidget extends ConsumerWidget {
         height: 44,
         child: Center(child: CircularProgressIndicator(strokeWidth: 2)),
       ),
-      error: (err, stack) => const SizedBox.shrink(),
+     error: (err, stack) => SizedBox(
+        height: 44,
+        child: Padding(
+          padding: const EdgeInsets.symmetric(horizontal: 16),
+          child: Row(
+            children: [
+              Icon(Icons.error_outline, size: 18, color: theme.colorScheme.error),
+              const SizedBox(width: 6),
+              Text(
+                'Categories could not be loaded.',
+                style: theme.textTheme.bodySmall?.copyWith(color: theme.colorScheme.error),
+              ),
+              IconButton(
+                icon: const Icon(Icons.refresh, size: 18),
+                tooltip: 'Try Again',
+                onPressed: () => ref.invalidate(categoriesProvider),
+              ),
+            ],
+          ),
+        ),
+      ),
     );
   }
 }
