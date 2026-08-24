@@ -6,6 +6,7 @@ import '../providers/product_provider.dart';
 import '../widgets/product_card.dart';
 import '../widgets/category_chips_widget.dart';
 import '../widgets/product_search_bar.dart';
+import 'package:go_router/go_router.dart';
 
 class ProductListScreen extends ConsumerWidget {
   const ProductListScreen({super.key});
@@ -15,9 +16,16 @@ class ProductListScreen extends ConsumerWidget {
     final filteredProductsAsync = ref.watch(filteredProductsProvider);
 
     return Scaffold(
-      appBar: AppBar(
-        title: const Text('Product List'),
-        centerTitle: true,
+    appBar: AppBar(
+    title: const Text('Product List'),
+    centerTitle: true,
+    actions: [
+      IconButton(
+      icon: const Icon(Icons.favorite),
+      tooltip: 'Favorites',
+      onPressed: () => context.push('/favorites'),
+    ),
+  ],
       ),
       body: Column(
         children: [
