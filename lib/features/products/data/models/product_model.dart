@@ -49,5 +49,4 @@ Map<String, dynamic> toJson() {
       'stock': stock,
     };
 }
-
 }//Class
