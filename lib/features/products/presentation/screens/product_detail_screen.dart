@@ -1,9 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:cached_network_image/cached_network_image.dart';
-import '../providers/product_provider.dart';
-import '../../data/models/product_model.dart';
 import '../widgets/app_states.dart';
+import '../../../favorites/presentation/providers/favorites_provider.dart';
+import '../../data/models/product_model.dart';
+import '../providers/product_provider.dart';
 
 class ProductDetailScreen extends ConsumerWidget {
   final int id;
@@ -30,16 +31,17 @@ class ProductDetailScreen extends ConsumerWidget {
   }
 }
 
-class _ProductDetailContent extends StatelessWidget {
+class _ProductDetailContent extends ConsumerWidget {
   final ProductModel product;
 
   const _ProductDetailContent({required this.product});
 
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context, WidgetRef ref) {
     final theme = Theme.of(context);
     final size = MediaQuery.of(context).size;
     final isWideScreen = size.width >= 600;
+    final isFavorite = ref.watch(isFavoriteProvider(product.id));
 
     Widget imageWidget = AspectRatio(
       aspectRatio: isWideScreen ? 1 : 1.2,
@@ -54,8 +56,8 @@ class _ProductDetailContent extends StatelessWidget {
           errorWidget: (context, url, error) => Container(
             color: theme.colorScheme.surfaceContainerHighest,
             child: Icon(
-              Icons.broken_image, 
-              size: 64, 
+              Icons.broken_image,
+              size: 64,
               color: theme.colorScheme.outline,
             ),
           ),
@@ -86,13 +88,11 @@ class _ProductDetailContent extends StatelessWidget {
           ],
         ),
         const SizedBox(height: 12),
-
         Text(
           product.title,
           style: theme.textTheme.headlineSmall?.copyWith(fontWeight: FontWeight.bold),
         ),
         const SizedBox(height: 12),
-
         Row(
           children: [
             Text(
@@ -113,7 +113,7 @@ class _ProductDetailContent extends StatelessWidget {
                 child: Text(
                   '%${product.discountPercentage.toStringAsFixed(0)} Sale',
                   style: theme.textTheme.labelMedium?.copyWith(
-                    color: theme.colorScheme.onErrorContainer, 
+                    color: theme.colorScheme.onErrorContainer,
                     fontWeight: FontWeight.bold,
                   ),
                 ),
@@ -121,7 +121,6 @@ class _ProductDetailContent extends StatelessWidget {
           ],
         ),
         const SizedBox(height: 12),
-
         Row(
           children: [
             Icon(
@@ -142,7 +141,6 @@ class _ProductDetailContent extends StatelessWidget {
         const SizedBox(height: 16),
         const Divider(),
         const SizedBox(height: 16),
-
         Text(
           'Description',
           style: theme.textTheme.titleMedium?.copyWith(fontWeight: FontWeight.bold),
@@ -153,12 +151,16 @@ class _ProductDetailContent extends StatelessWidget {
           style: theme.textTheme.bodyLarge?.copyWith(height: 1.5, color: theme.hintColor),
         ),
         const SizedBox(height: 24),
-
         Row(
           children: [
             IconButton.outlined(
-              onPressed: () {},
-              icon: const Icon(Icons.favorite_border),
+              onPressed: () {
+                ref.read(favoritesProvider.notifier).toggleFavorite(product);
+              },
+              icon: Icon(
+                isFavorite ? Icons.favorite : Icons.favorite_border,
+                color: isFavorite ? theme.colorScheme.error : theme.colorScheme.onSurfaceVariant,
+              ),
               iconSize: 28,
               style: IconButton.styleFrom(
                 padding: const EdgeInsets.all(16),
