@@ -36,26 +36,24 @@ class CategoryChipsWidget extends ConsumerWidget {
               ? '${category.name[0].toUpperCase()}${category.name.substring(1)}'
               : '';
 
-              return ChoiceChip(
-                label: Text(
-                  category.name[0].toUpperCase() + category.name.substring(1),
-                ),
-                selected: isSelected,
-                onSelected: (selected) {
-                  if (selected) {
-                    ref.read(searchQueryProvider.notifier).state = '';
-                    ref.read(selectedCategoryProvider.notifier).state =
-                        category.slug.isEmpty ? null : category.slug;
-                  }
-                },
-                selectedColor: theme.colorScheme.primaryContainer,
-                labelStyle: TextStyle(
-                  color: isSelected
-                      ? theme.colorScheme.onPrimaryContainer
-                      : theme.colorScheme.onSurface,
-                  fontWeight: isSelected ? FontWeight.bold : FontWeight.normal,
-                ),
-              );
+    return ChoiceChip(
+      label: Text(displayName),
+      selected: isSelected,
+      onSelected: (selected) {
+        if (selected) {
+          ref.read(searchQueryProvider.notifier).state = '';
+          ref.read(selectedCategoryProvider.notifier).state =
+              category.slug.isEmpty ? null : category.slug;
+    }
+  },
+  selectedColor: theme.colorScheme.primaryContainer,
+  labelStyle: TextStyle(
+    color: isSelected
+        ? theme.colorScheme.onPrimaryContainer
+        : theme.colorScheme.onSurface,
+    fontWeight: isSelected ? FontWeight.bold : FontWeight.normal,
+  ),
+);
             },
           ),
         );
