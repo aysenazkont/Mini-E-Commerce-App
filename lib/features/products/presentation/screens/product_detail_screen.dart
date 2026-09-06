@@ -5,6 +5,8 @@ import '../widgets/app_states.dart';
 import '../../../favorites/presentation/providers/favorites_provider.dart';
 import '../../data/models/product_model.dart';
 import '../providers/product_provider.dart';
+import 'package:go_router/go_router.dart';
+import '../../../cart/presentation/providers/cart_provider.dart';
 
 class ProductDetailScreen extends ConsumerWidget {
   final int id;
@@ -167,19 +169,35 @@ class _ProductDetailContent extends ConsumerWidget {
               ),
             ),
             const SizedBox(width: 12),
-            Expanded(
-              child: ElevatedButton.icon(
-                onPressed: product.stock > 0 ? () {} : null,
-                icon: const Icon(Icons.shopping_cart),
-                label: const Text('Add to Cart'),
-                style: ElevatedButton.styleFrom(
-                  backgroundColor: theme.colorScheme.primary,
-                  foregroundColor: theme.colorScheme.onPrimary,
-                  padding: const EdgeInsets.symmetric(vertical: 16),
-                  textStyle: const TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
+         Expanded(
+          child: ElevatedButton.icon(
+            onPressed: product.stock > 0
+              ? () {
+                ref.read(cartProvider.notifier).addToCart(product);
+                ScaffoldMessenger.of(context).hideCurrentSnackBar();
+                ScaffoldMessenger.of(context).showSnackBar(
+                  SnackBar(
+                    content: Text('${product.title} sepete eklendi'),
+                    duration: const Duration(seconds: 2),
+                    behavior: SnackBarBehavior.floating,
+                    action: SnackBarAction(
+                      label: 'Sepete Git',
+                      onPressed: () => context.push('/cart'),
                 ),
               ),
-            ),
+            );
+          }
+        : null,
+    icon: const Icon(Icons.shopping_cart),
+    label: const Text('Add to Cart'),
+    style: ElevatedButton.styleFrom(
+      backgroundColor: theme.colorScheme.primary,
+      foregroundColor: theme.colorScheme.onPrimary,
+      padding: const EdgeInsets.symmetric(vertical: 16),
+      textStyle: const TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
+    ),
+  ),
+),
           ],
         ),
       ],
