@@ -193,11 +193,11 @@ class _ProductDetailContent extends ConsumerWidget {
                 ScaffoldMessenger.of(context).hideCurrentSnackBar();
                 ScaffoldMessenger.of(context).showSnackBar(
                   SnackBar(
-                    content: Text('${product.title} sepete eklendi'),
+                    content: Text('${product.title} is added to your cart'),
                     duration: const Duration(seconds: 2),
                     behavior: SnackBarBehavior.floating,
                     action: SnackBarAction(
-                      label: 'Sepete Git',
+                      label: 'Go to Cart',
                       onPressed: () => context.push('/cart'),
                 ),
               ),
