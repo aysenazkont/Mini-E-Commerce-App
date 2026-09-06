@@ -20,6 +20,22 @@ class ProductDetailScreen extends ConsumerWidget {
     return Scaffold(
       appBar: AppBar(
         title: const Text('Product Detail'),
+        actions: [
+    Consumer(
+      builder: (context, ref, child) {
+        final itemCount = ref.watch(cartItemCountProvider);
+        return IconButton(
+          tooltip: 'My Cart',
+          icon: Badge(
+            isLabelVisible: itemCount > 0,
+            label: Text('$itemCount'),
+            child: const Icon(Icons.shopping_cart),
+          ),
+          onPressed: () => context.push('/cart'),
+        );
+      },
+    ),
+  ],
       ),
       body: productAsync.when(
         data: (product) => _ProductDetailContent(product: product),

@@ -2,6 +2,7 @@ import 'package:go_router/go_router.dart';
 import '../../features/products/presentation/screens/product_detail_screen.dart'; // Bir sonraki adımda oluşturacağız
 import '../../features/products/presentation/screens/product_list_screen.dart';
 import '../../features/favorites/presentation/screens/favorites_screen.dart';
+import '../../features/cart/presentation/screens/cart_screen.dart';
 
 final goRouter = GoRouter(
   initialLocation: '/',
@@ -24,5 +25,9 @@ final goRouter = GoRouter(
         ),
       ],
     ),
-  ],
-);
+    GoRoute(
+      path: '/cart',
+      builder: (context, state) => const CartScreen(),
+      ),
+    ],
+  );

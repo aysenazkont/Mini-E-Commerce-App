@@ -7,6 +7,7 @@ import '../widgets/product_card.dart';
 import '../widgets/category_chips_widget.dart';
 import '../widgets/product_search_bar.dart';
 import 'package:go_router/go_router.dart';
+import '../../../cart/presentation/providers/cart_provider.dart';
 
 class ProductListScreen extends ConsumerWidget {
   const ProductListScreen({super.key});
@@ -25,8 +26,22 @@ class ProductListScreen extends ConsumerWidget {
       tooltip: 'Favorites',
       onPressed: () => context.push('/favorites'),
     ),
-  ],
-      ),
+    Consumer(
+      builder: (context, ref, child) {
+        final itemCount = ref.watch(cartItemCountProvider);
+        return IconButton(
+          tooltip: 'My Cart',
+          icon: Badge(
+            isLabelVisible: itemCount > 0,
+            label: Text('$itemCount'),
+            child: const Icon(Icons.shopping_cart),
+          ),
+          onPressed: () => context.push('/cart'),
+        );
+      },
+    ),
+      ],
+    ),
       body: Column(
         children: [
           const ProductSearchBar(),
