@@ -26,6 +26,34 @@ This project is a mobile e-commerce application developed using Flutter as part 
 
 ---
 
+## State Management Approach (Riverpod)
+
+The application relies entirely on **Flutter Riverpod 2.x** for state management, reactive dependency injection, and separating business logic from presentation:
+
+- **Asynchronous Data Handling (`AsyncNotifier` & `FutureProvider`):** 
+  Remote API requests (fetching products, searching, filtering) and local persistence streams are encapsulated inside `AsyncNotifier` and `FutureProvider`. This cleanly maps internal states to Flutter UI states using Riverpod's pattern-matching `.when(data: ..., loading: ..., error: ...)` method.
+- **Cart State (`CartNotifier` as `AsyncNotifier`):**
+  The shopping cart is managed via an immutable `AsyncNotifier<List<CartItemModel>>`. State updates produce new lists rather than mutating existing memory references, ensuring predictable state transitions and automated persistence triggers.
+- **Derived / Computed State Providers:**
+  - `cartTotalPriceProvider`: Automatically calculates and updates the total price whenever the cart state changes.
+  - `cartItemCountProvider`: Aggregates the total quantity of items in the cart to dynamically update the badge count in the AppBar.
+- **Rebuild Optimization with `.family`:**
+  Favorite toggles on individual cards are observed through `isFavoriteProvider.family(productId)`. This isolates widget rebuilds strictly to the specific card that was tapped, preventing the entire grid from re-rendering.
+- **Search Debouncing:**
+  A 500ms debounce controller intercepts user keystrokes in the search bar, dispatching queries to the API provider only after typing pauses.
+
+---
+
+## Local Storage Strategy (SharedPreferences)
+
+Local data persistence is built using the **Repository Pattern** on top of `SharedPreferences`, completely decoupling the storage engine from UI widgets:
+
+- **Layer Separation:** UI widgets and Riverpod notifiers do not invoke `SharedPreferences` directly. All read/write operations are mediated through `FavoritesRepository` and `CartRepository`.
+- **JSON Serialization:** Both products in favorites and cart line items are serialized into JSON strings via `toJson()` and deserialized back into typed Dart models via `fromJson()`.
+- **Cold Start Restoration:** When the app launches, repositories read the saved string lists from device storage and initialize the providers asynchronously, ensuring no loss of user cart or favorite data across app restarts.
+
+---
+
 ## API Endpoints Used
 
 The project uses the **DummyJSON API** as its primary remote data source:
@@ -35,7 +63,6 @@ The project uses the **DummyJSON API** as its primary remote data source:
 * **Category List:** `GET https://dummyjson.com/products/categories`
 * **Products by Category:** `GET https://dummyjson.com/products/category/{category}`
 * **Product Detail:** `GET https://dummyjson.com/products/{id}`
-
 ---
 
 ## Architecture & Project Structure
@@ -59,13 +86,54 @@ lib/
 │   └── cart/                  
 │       ├── data/               
 │       └── presentation/       
-└── main.dart         
+└── main.dart 
+``` 
 
 ---
 
-## Technologies Used & Technical Decisions
+## Getting Started & Installation
 
-* **Architectural Structure:** To ensure modularity and sustainability in the project, Feature-First approach was preferred.
-* **State Management & DI:** Riverpod was chosen for state management and dependency injection needs.
-* **API Client:** The Dio package, which provides advanced error handling and interceptor support for server requests, was integrated.
-* **Routing:** GoRouter was used for page transitions and deep linking
+Follow these steps to run the project locally on your machine.
+
+### Prerequisites
+- [Flutter SDK](https://docs.flutter.dev/get-started/install) (version `^3.x` recommended)
+- Dart SDK (bundled with Flutter)
+- Android Studio / Xcode / VS Code with Flutter extension
+- An emulator or physical device connected
+
+### Installation Steps
+
+1. **Clone the repository:**
+   ```bash
+   git clone [https://github.com/your-username/mini_ecommerce_app.git](https://github.com/your-username/mini_ecommerce_app.git)
+   cd mini_ecommerce_app
+
+2. **Install project dependencies:**
+    ```bash
+    flutter pub get 
+
+3. **Verify the codebase and linting:**
+    ```bash
+    flutter analyze 
+
+4. **Run the application:**
+    ```bash
+    flutter run 
+
+---
+
+## Screenshots & Demo
+
+### Mobile View (iPhone 16 Pro Max)
+
+| Product Discovery & Search | Product Detail Screen | Saved Favorites | Persistent Cart & Summary |
+| :---: | :---: | :---: | :---: |
+| <img src="docs/screenshots/01_product_list.png" width="195" alt="Product Discovery & Search" /> | <img src="docs/screenshots/02_product_detail.png" width="195" alt="Product Detail Screen" /> | <img src="docs/screenshots/03_favorites.png" width="195" alt="Saved Favorites" /> | <img src="docs/screenshots/04_cart_screen.png" width="195" alt="Persistent Cart & Summary" /> |
+
+---
+
+### Responsive & Adaptive View
+
+<p align="center">
+  <img src="docs/screenshots/05_responsive_view.png" width="720" alt="Responsive Dual-Pane / Grid Layout" />
+</p>
