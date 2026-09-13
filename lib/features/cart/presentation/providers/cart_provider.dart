@@ -1,69 +1,99 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../../../products/data/models/product_model.dart';
 import '../../data/models/cart_item_model.dart';
+import '../../data/repositories/cart_repository.dart';
 
-class CartNotifier extends Notifier<List<CartItemModel>> {
+final cartRepositoryProvider = Provider<CartRepository>((ref) {
+  return CartRepository();
+});
+
+class CartNotifier extends AsyncNotifier<List<CartItemModel>> {
   @override
-  List<CartItemModel> build() {
-    return [];
+  Future<List<CartItemModel>> build() async {
+    final repository = ref.watch(cartRepositoryProvider);
+    return repository.getCart();
   }
 
-  void addToCart(ProductModel product) {
-    final existingIndex = state.indexWhere((item) => item.product.id == product.id);
+  Future<void> addToCart(ProductModel product) async {
+    final repository = ref.read(cartRepositoryProvider);
+    final currentList = state.value ?? [];
+    final existingIndex = currentList.indexWhere((item) => item.product.id == product.id);
 
+    List<CartItemModel> updatedList;
     if (existingIndex != -1) {
-      final currentItem = state[existingIndex];
-      final updatedList = [...state];
+      final currentItem = currentList[existingIndex];
+      updatedList = [...currentList];
       updatedList[existingIndex] = currentItem.copyWith(
         quantity: currentItem.quantity + 1,
       );
-      state = updatedList;
     } else {
-      state = [...state, CartItemModel(product: product, quantity: 1)];
+      updatedList = [...currentList, CartItemModel(product: product, quantity: 1)];
     }
+
+    await repository.saveCart(updatedList);
+    state = AsyncValue.data(updatedList);
   }
 
-  void increaseQuantity(int productId) {
-    state = state.map((item) {
+  Future<void> increaseQuantity(int productId) async {
+    final repository = ref.read(cartRepositoryProvider);
+    final currentList = state.value ?? [];
+    final updatedList = currentList.map((item) {
       if (item.product.id == productId) {
         return item.copyWith(quantity: item.quantity + 1);
       }
       return item;
     }).toList();
+
+    await repository.saveCart(updatedList);
+    state = AsyncValue.data(updatedList);
   }
 
-  void decreaseQuantity(int productId) {
-    final existingItem = state.firstWhere((item) => item.product.id == productId);
+  Future<void> decreaseQuantity(int productId) async {
+    final currentList = state.value ?? [];
+    final existingItem = currentList.firstWhere((item) => item.product.id == productId);
 
     if (existingItem.quantity > 1) {
-      state = state.map((item) {
+      final repository = ref.read(cartRepositoryProvider);
+      final updatedList = currentList.map((item) {
         if (item.product.id == productId) {
           return item.copyWith(quantity: item.quantity - 1);
         }
         return item;
       }).toList();
+
+      await repository.saveCart(updatedList);
+      state = AsyncValue.data(updatedList);
     } else {
-      removeFromCart(productId);
+      await removeFromCart(productId);
     }
   }
 
-  void removeFromCart(int productId) {
-    state = state.where((item) => item.product.id != productId).toList();
+  Future<void> removeFromCart(int productId) async {
+    final repository = ref.read(cartRepositoryProvider);
+    final currentList = state.value ?? [];
+    final updatedList = currentList.where((item) => item.product.id != productId).toList();
+
+    await repository.saveCart(updatedList);
+    state = AsyncValue.data(updatedList);
   }
 
-  void clearCart() {
-    state = [];
+  Future<void> clearCart() async {
+    final repository = ref.read(cartRepositoryProvider);
+    await repository.clearCart();
+    state = const AsyncValue.data([]);
   }
 }
 
-final cartProvider = NotifierProvider<CartNotifier, List<CartItemModel>>(CartNotifier.new);
+final cartProvider = AsyncNotifierProvider<CartNotifier, List<CartItemModel>>(() {
+  return CartNotifier();
+});
 
 final cartTotalPriceProvider = Provider<double>((ref) {
-  final cartItems = ref.watch(cartProvider);
+  final cartItems = ref.watch(cartProvider).value ?? [];
   return cartItems.fold(0.0, (sum, item) => sum + item.totalPrice);
 });
 
 final cartItemCountProvider = Provider<int>((ref) {
-  final cartItems = ref.watch(cartProvider);
+  final cartItems = ref.watch(cartProvider).value ?? [];
   return cartItems.fold(0, (sum, item) => sum + item.quantity);
 });

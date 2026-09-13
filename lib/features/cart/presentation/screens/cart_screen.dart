@@ -9,34 +9,44 @@ class CartScreen extends ConsumerWidget {
   const CartScreen({super.key});
 
   @override
-  Widget build(BuildContext context, WidgetRef ref) {
-    final cartItems = ref.watch(cartProvider);
-    final totalPrice = ref.watch(cartTotalPriceProvider);
-    final isWideScreen = MediaQuery.of(context).size.width >= 700;
+Widget build(BuildContext context, WidgetRef ref) {
+  final cartAsync = ref.watch(cartProvider);
+  final totalPrice = ref.watch(cartTotalPriceProvider);
+  final isWideScreen = MediaQuery.of(context).size.width >= 700;
 
-    return Scaffold(
-      appBar: AppBar(
-        title: const Text('My Cart'),
-        centerTitle: true,
-        actions: [
-          if (cartItems.isNotEmpty)
-            IconButton(
-              icon: const Icon(Icons.delete_sweep_outlined),
-              tooltip: 'Clear Cart',
-              onPressed: () => _showClearDialog(context, ref),
-            ),
-        ],
+  return Scaffold(
+    appBar: AppBar(
+      title: const Text('My Cart'),
+      centerTitle: true,
+      actions: [
+        if ((cartAsync.value ?? []).isNotEmpty)
+          IconButton(
+            icon: const Icon(Icons.delete_sweep_outlined),
+            tooltip: 'Clear Cart',
+            onPressed: () => _showClearDialog(context, ref),
+          ),
+      ],
+    ),
+    body: cartAsync.when(
+      data: (cartItems) {
+        if (cartItems.isEmpty) {
+          return const EmptyState(
+            message: 'No products in your cart yet.',
+            icon: Icons.shopping_cart_outlined,
+          );
+        }
+        return isWideScreen
+            ? _buildWideLayout(context, ref, cartItems, totalPrice)
+            : _buildMobileLayout(context, ref, cartItems, totalPrice);
+      },
+      loading: () => const LoadingState(),
+      error: (err, stack) => ErrorState(
+        error: err,
+        onRetry: () => ref.invalidate(cartProvider),
       ),
-      body: cartItems.isEmpty
-          ? const EmptyState(
-              message: 'No products in your cart yet.',
-              icon: Icons.shopping_cart_outlined,
-            )
-          : isWideScreen
-              ? _buildWideLayout(context, ref, cartItems, totalPrice)
-              : _buildMobileLayout(context, ref, cartItems, totalPrice),
-    );
-  }
+    ),
+  );
+}
 
   Widget _buildMobileLayout(
     BuildContext context,
