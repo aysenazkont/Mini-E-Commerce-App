@@ -19,7 +19,7 @@ class MyApp extends StatelessWidget {
     return MaterialApp.router(
       title: 'Mini E-Commerce',
       debugShowCheckedModeBanner: false,
-      theme: AppTheme.lightTheme, 
+      theme: AppTheme.darkTheme, 
       routerConfig: goRouter, 
     );
   }

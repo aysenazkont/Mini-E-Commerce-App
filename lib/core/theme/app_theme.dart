@@ -17,4 +17,17 @@ class AppTheme {
       ),
     );
   }
+
+  static ThemeData get darkTheme {
+    return ThemeData(
+      useMaterial3: true,
+      primaryColor: const Color.fromARGB(255, 255, 193, 231),
+      scaffoldBackgroundColor: Colors.black,
+      appBarTheme: const AppBarTheme(
+        backgroundColor: Color.fromARGB(255, 255, 193, 231),
+        foregroundColor: Colors.white,
+        elevation: 0,
+      ),
+    );
+  }
 }
