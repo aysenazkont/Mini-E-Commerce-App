@@ -208,7 +208,10 @@ class _CartItemTile extends ConsumerWidget {
                   imageUrl: product.thumbnail,
                   fit: BoxFit.cover,
                   placeholder: (_, __) => const Center(child: CircularProgressIndicator(strokeWidth: 2)),
-                  errorWidget: (_, __, ___) => const Icon(Icons.broken_image),
+                  errorWidget: (_, __, ___) => Icon(
+                    Icons.broken_image,
+                    color: theme.colorScheme.outline,
+                  ),
                 ),
               ),
             ),

@@ -1,13 +1,14 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import '../widgets/app_states.dart'; 
+import 'package:go_router/go_router.dart';
+import '../../../../core/theme/theme_provider.dart';
+import '../../../cart/presentation/providers/cart_provider.dart';
 import '../../data/models/product_model.dart';
 import '../providers/product_provider.dart';
-import '../widgets/product_card.dart';
+import '../widgets/app_states.dart';
 import '../widgets/category_chips_widget.dart';
+import '../widgets/product_card.dart';
 import '../widgets/product_search_bar.dart';
-import 'package:go_router/go_router.dart';
-import '../../../cart/presentation/providers/cart_provider.dart';
 
 class ProductListScreen extends ConsumerWidget {
   const ProductListScreen({super.key});
@@ -15,33 +16,38 @@ class ProductListScreen extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final filteredProductsAsync = ref.watch(filteredProductsProvider);
+    final themeMode = ref.watch(themeModeProvider);
+    final isDark = themeMode == ThemeMode.dark ||
+        (themeMode == ThemeMode.system &&
+            MediaQuery.platformBrightnessOf(context) == Brightness.dark);
+    final itemCount = ref.watch(cartItemCountProvider);
 
     return Scaffold(
-    appBar: AppBar(
-    title: const Text('Product List'),
-    centerTitle: true,
-    actions: [
-      IconButton(
-      icon: const Icon(Icons.favorite),
-      tooltip: 'Favorites',
-      onPressed: () => context.push('/favorites'),
-    ),
-    Consumer(
-      builder: (context, ref, child) {
-        final itemCount = ref.watch(cartItemCountProvider);
-        return IconButton(
-          tooltip: 'My Cart',
-          icon: Badge(
-            isLabelVisible: itemCount > 0,
-            label: Text('$itemCount'),
-            child: const Icon(Icons.shopping_cart),
+      appBar: AppBar(
+        title: const Text('Product List'),
+        centerTitle: true,
+        actions: [
+          IconButton(
+            tooltip: isDark ? 'Light theme' : 'Dark theme',
+            icon: Icon(isDark ? Icons.light_mode_outlined : Icons.dark_mode_outlined),
+            onPressed: () => ref.read(themeModeProvider.notifier).toggleLightDark(),
           ),
-          onPressed: () => context.push('/cart'),
-        );
-      },
-    ),
-      ],
-    ),
+          IconButton(
+            icon: const Icon(Icons.favorite),
+            tooltip: 'Favorites',
+            onPressed: () => context.push('/favorites'),
+          ),
+          IconButton(
+            tooltip: 'My Cart',
+            icon: Badge(
+              isLabelVisible: itemCount > 0,
+              label: Text('$itemCount'),
+              child: const Icon(Icons.shopping_cart),
+            ),
+            onPressed: () => context.push('/cart'),
+          ),
+        ],
+      ),
       body: Column(
         children: [
           const ProductSearchBar(),
