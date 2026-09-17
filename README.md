@@ -137,3 +137,10 @@ Follow these steps to run the project locally on your machine.
 <p align="center">
   <img src="docs/screenshots/05_responsive_view.png" width="720" alt="Responsive Dual-Pane / Grid Layout" />
 </p>
+
+---
+
+### Demo Video
+
+https://github.com/user-attachments/assets/56858ce5-e7ef-4348-a128-f38655541707
+
