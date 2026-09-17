@@ -11,6 +11,9 @@ This report documents how Artificial Intelligence tools were utilized during the
 ---
 
 ## 2. Tasks & Areas of Application
+* **Task 1 (Project Setup & Architecture):** Establishing the Feature-First directory structure, configuring base theme tokens, and defining the initial `GoRouter` navigation skeleton according to Clean Architecture principles.
+* **Task 2 (Networking & Product Catalog):** Configuring the centralized `Dio` HTTP client with base timeouts, mapping raw DummyJSON responses to typed `ProductModel` entities, and implementing responsive grid layouts with dedicated loading/error states.
+* **Task 3 (Product Detail Screen):** Extracting path parameters via `GoRouter`, designing a responsive multi-column layout for product media and metadata, and implementing stock level badges with dynamic `SnackBar` feedback.
 * **Task 4 (Search & Category Filtering):** Architectural design for synchronizing text search queries with category chip selections, including debouncing logic.
 * **Task 5 (Favorites & Persistence):** Implementing local data persistence with `SharedPreferences`, JSON serialization, and optimizing favorite toggles with `isFavoriteProvider.family`.
 * **Task 6 (Cart State Management & Persistence):** Transitioning an in-memory shopping cart into a persistent architecture using `AsyncNotifier` and `CartRepository`.
